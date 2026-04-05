@@ -39,6 +39,10 @@ proc initScope*(w, h: int): Scope =
 proc w*(s: Scope): int = s.phosphor.w
 proc h*(s: Scope): int = s.phosphor.h
 
+proc resize*(scope: var Scope, w, h: int) =
+  if w == scope.w and h == scope.h: return
+  scope.phosphor = initPhosphor(w, h)
+
 # ── Trace rendering ──────────────────────────────────────────────────
 
 proc renderTrace*(scope: var Scope) =

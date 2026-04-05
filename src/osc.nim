@@ -19,8 +19,8 @@ proc main() =
   setControlCHook(exitProc)
   hideCursor()
 
-  let w = terminalWidth()
-  let h = terminalHeight()
+  var w = terminalWidth()
+  var h = terminalHeight()
   var tb = newTerminalBuffer(w, h)
 
   crtTurnOn(tb, w, h)
@@ -30,6 +30,13 @@ proc main() =
   var running = true
 
   while running:
+    let nw = terminalWidth()
+    let nh = terminalHeight()
+    if nw != w or nh != h:
+      w = nw
+      h = nh
+      scope.resize(w, h)
+
     if not scope.frozen:
       audio.readSamples(scope)
 
