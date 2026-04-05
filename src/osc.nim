@@ -68,10 +68,7 @@ proc main() =
     of Key.Space:
       scope.frozen = not scope.frozen
     of Key.G:
-      scope.grid = case scope.grid
-        of gsGrid: gsCross
-        of gsCross: gsOff
-        of gsOff: gsGrid
+      scope.grid = if scope.grid == gsGrid: gsOff else: gsGrid
     else:
       discard
 
