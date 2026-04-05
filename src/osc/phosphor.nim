@@ -5,9 +5,8 @@ import illwill, math
 
 const
   PhosphorDecay*  = 0.60   # per-frame persistence (P31 green phosphor)
-  BeamIntensity*  = 0.9    # brightness at beam impact
-  BloomInner*     = 0.25   # glow spread to adjacent pixels
-  BloomOuter*     = 0.08   # faint halo from electron scatter
+  BeamIntensity*  = 0.7    # brightness at beam impact
+  BloomH*         = 0.15   # horizontal glow spread
   MinBright*      = 0.02   # below this, phosphor is considered off
 
 type
@@ -45,20 +44,10 @@ proc plotDot*(pb: var PhosphorBuffer, fx, fy: float) =
   let y = int(fy)
   if x < 0 or x >= pb.w or y < 0 or y >= pb.pixH: return
 
-  # Beam impact
+  # Beam impact — no vertical bloom, keeps traces thin
   pb.add(x, y, BeamIntensity)
-  # Inner bloom — phosphor scatter
-  pb.add(x, y - 1, BloomInner)
-  pb.add(x, y + 1, BloomInner)
-  pb.add(x - 1, y, BloomInner * 0.5)
-  pb.add(x + 1, y, BloomInner * 0.5)
-  # Outer bloom — electron scatter
-  pb.add(x, y - 2, BloomOuter)
-  pb.add(x, y + 2, BloomOuter)
-  pb.add(x - 1, y - 1, BloomOuter)
-  pb.add(x + 1, y - 1, BloomOuter)
-  pb.add(x - 1, y + 1, BloomOuter)
-  pb.add(x + 1, y + 1, BloomOuter)
+  pb.add(x - 1, y, BloomH)
+  pb.add(x + 1, y, BloomH)
 
 proc plotLine*(pb: var PhosphorBuffer, x0, y0, x1, y1: float) =
   ## Interpolated line of phosphor dots between two points.
