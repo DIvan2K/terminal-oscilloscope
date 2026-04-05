@@ -43,7 +43,6 @@ proc main() =
 
     tb = newTerminalBuffer(w, h)
     scope.phosphor.render(tb)
-    drawGraticule(tb, w, h)
     drawHUD(tb, w, h, scope)
     tb.display()
 

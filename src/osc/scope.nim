@@ -76,38 +76,6 @@ proc renderTrace*(scope: var Scope) =
       prevX = x
       prevY = y
 
-# ── Graticule ────────────────────────────────────────────────────────
-
-proc drawGraticule*(tb: var TerminalBuffer, w, h: int) =
-  let cx = w div 2
-  let cy = h div 2
-
-  # Division lines
-  for d in 1..<10:
-    let x = d * w div 10
-    if x > 0 and x < w:
-      for y in 0..<h:
-        tb.write(x, y, fgGreen, styleDim, "│")
-  for d in 1..<8:
-    let y = d * h div 8
-    if y > 0 and y < h:
-      for x in 0..<w:
-        tb.write(x, y, fgGreen, styleDim, "─")
-
-  # Center crosshair
-  for x in 0..<w: tb.write(x, cy, fgGreen, styleDim, "─")
-  for y in 0..<h: tb.write(cx, y, fgGreen, styleDim, "│")
-  tb.write(cx, cy, fgGreen, "┼")
-
-  # Intersections
-  for dx in 1..<10:
-    let x = dx * w div 10
-    if x > 0 and x < w:
-      for dy in 1..<8:
-        let y = dy * h div 8
-        if y > 0 and y < h:
-          tb.write(x, y, fgGreen, styleDim, "┼")
-
 # ── HUD ──────────────────────────────────────────────────────────────
 
 proc drawHUD*(tb: var TerminalBuffer, w, h: int, scope: Scope) =
