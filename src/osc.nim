@@ -48,7 +48,7 @@ proc main() =
     tb = newTerminalBuffer(w, h)
     scope.phosphor.render(tb)
     drawGraticule(tb, w, h, scope.grid)
-    drawHUD(tb, w, h, scope, audio.sourceLabel)
+    drawHUD(tb, w, h, scope)
     tb.display()
 
     let key = getKey()

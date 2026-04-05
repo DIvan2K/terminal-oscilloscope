@@ -120,8 +120,7 @@ proc drawGraticule*(tb: var TerminalBuffer, w, h: int, grid: GridStyle) =
 
 # ── HUD ──────────────────────────────────────────────────────────────
 
-proc drawHUD*(tb: var TerminalBuffer, w, h: int, scope: Scope,
-              source: string) =
+proc drawHUD*(tb: var TerminalBuffer, w, h: int, scope: Scope) =
   let modeStr = case scope.mode
     of ModeYT: "Y-T"
     of ModeXY: "X-Y"
@@ -132,7 +131,6 @@ proc drawHUD*(tb: var TerminalBuffer, w, h: int, scope: Scope,
   let freezeStr = if scope.frozen: " ▌▌" else: ""
   tb.write(1, 0, fgGreen, styleBright,
            " " & modeStr & gainStr & tdStr & freezeStr & " ")
-  tb.write(w - source.len - 2, 0, fgGreen, styleDim, source)
 
   let help = " m:mode +/-:gain [/]:time g:grid spc:freeze q:quit "
   tb.write(w - help.len - 1, h - 1, fgGreen, styleDim, help)
