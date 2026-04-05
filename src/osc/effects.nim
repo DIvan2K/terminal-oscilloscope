@@ -80,9 +80,9 @@ proc crtTurnOn*(tb: var TerminalBuffer, w, h: int) =
           tb.write(x, y, color, ch)
 
     elif elapsed < OnBeamMs:
-      # Phase 5: Beam sweep — electron beam scans top to bottom
+      # Phase 5: Beam sweep — electron beam scans top to center
       let beamRow = int((elapsed - OnStaticMs).float /
-                        (OnBeamMs - OnStaticMs).float * h.float)
+                        (OnBeamMs - OnStaticMs).float * (h.float / 2.0))
       for y in 0..<h:
         let dist = abs(y - beamRow)
         if dist == 0:
