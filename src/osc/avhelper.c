@@ -11,11 +11,12 @@ typedef void AVFormatContext;
 typedef void AVInputFormat;
 typedef void AVDictionary;
 
-/* AVPacket — we only need data, size, stream_index.
-   Layout is stable across FFmpeg 5.x/6.x/7.x:
-   first field is AVBufferRef*, then data, size, stream_index */
+/* AVPacket partial layout — must match FFmpeg 5.x/6.x/7.x:
+   buf(8), pts(8), dts(8), data(8), size(4), stream_index(4) */
 typedef struct {
     void *buf;
+    int64_t pts;
+    int64_t dts;
     uint8_t *data;
     int size;
     int stream_index;

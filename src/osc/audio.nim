@@ -86,21 +86,29 @@ proc readSamples*(cap: var AudioCapture, scope: var Scope) =
   if not cap.live: return
 
   const frameSize = 4  # 2ch × 16-bit
-  var total = 0
-  while total < scope.samplesL.len:
-    let ret = av_helper_read_frame(cap.fmtCtx, cap.packet)
-    if ret < 0: break
-    if av_helper_packet_stream(cap.packet) == cap.streamIdx:
-      let data = av_helper_packet_data(cap.packet)
-      let size = av_helper_packet_size(cap.packet)
-      for i in 0..<(size div frameSize):
-        if total >= scope.samplesL.len: break
-        let off = i * frameSize
-        let left = cast[int16]((data[off + 1].uint16 shl 8) or data[off].uint16)
-        let right = cast[int16]((data[off + 3].uint16 shl 8) or data[off + 2].uint16)
-        scope.samplesL[total] = left.float / 32768.0
-        scope.samplesR[total] = right.float / 32768.0
-        total += 1
+
+  # Read one packet — av_read_frame blocks until data arrives,
+  # which naturally rate-limits the render loop to the audio rate
+  let ret = av_helper_read_frame(cap.fmtCtx, cap.packet)
+  if ret < 0:
+    scope.sampleCount = 0
+    return
+
+  if av_helper_packet_stream(cap.packet) != cap.streamIdx:
     av_helper_packet_unref(cap.packet)
-    if total > 0: break
-  scope.sampleCount = total
+    scope.sampleCount = 0
+    return
+
+  let data = av_helper_packet_data(cap.packet)
+  let size = av_helper_packet_size(cap.packet)
+  let frames = min(size div frameSize, scope.samplesL.len)
+
+  for i in 0..<frames:
+    let off = i * frameSize
+    let left = cast[int16]((data[off + 1].uint16 shl 8) or data[off].uint16)
+    let right = cast[int16]((data[off + 3].uint16 shl 8) or data[off + 2].uint16)
+    scope.samplesL[i] = left.float / 32768.0
+    scope.samplesR[i] = right.float / 32768.0
+
+  scope.sampleCount = frames
+  av_helper_packet_unref(cap.packet)
