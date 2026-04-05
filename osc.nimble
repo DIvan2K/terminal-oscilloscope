@@ -2,10 +2,10 @@
 
 version       = "0.1.0"
 author        = "rolandnsharp"
-description   = "CRT TV turn on/off effects in the terminal"
+description   = "Terminal oscilloscope with CRT phosphor physics"
 license       = "MIT"
 srcDir        = "src"
-bin           = @["crt"]
+bin           = @["osc"]
 
 # Dependencies
 

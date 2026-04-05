@@ -8,7 +8,7 @@
 ##   - Live audio capture via ffmpeg/PulseAudio or demo signal
 
 import illwill, os
-import crt/[effects, phosphor, scope, audio]
+import osc/[effects, phosphor, scope, audio]
 
 proc exitProc() {.noconv.} =
   illwillDeinit()

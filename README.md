@@ -21,7 +21,7 @@ Requires [Nim](https://nim-lang.org/) 2.x.
 git clone https://github.com/rolandnsharp/terminal-oscilloscope.git
 cd terminal-oscilloscope
 nimble build
-./crt
+./osc
 ```
 
 ## Controls
