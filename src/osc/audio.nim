@@ -1,7 +1,7 @@
-## Audio capture via libavdevice/libavformat (direct C bindings),
-## with fallback to ffmpeg subprocess, then demo signal.
+## Audio capture via libavdevice/libavformat (dlopen at runtime),
+## with fallback to demo signal.
 
-import osproc, streams, strutils, math
+import osproc, strutils, math
 import scope
 
 # ── libav C helper bindings ──────────────────────────────────────────
@@ -50,20 +50,14 @@ proc findMonitorSource(): string =
 
 type
   AudioMode* = enum
-    amLibav   ## Direct libav capture (fastest, no subprocess)
-    amLive    ## ffmpeg/parec subprocess fallback
-    amDemo    ## Built-in synthesized waveforms
+    amLive   ## Direct libav capture
+    amDemo   ## Built-in synthesized waveforms
 
   AudioCapture* = object
     mode*: AudioMode
-    # libav state
     fmtCtx: ptr AVFormatContext
     packet: ptr AVPacket
     streamIdx: cint
-    # subprocess fallback
-    process: Process
-    stream: Stream
-    # demo state
     phase: float
     demoFreqL*, demoFreqR*: float
     demoPreset*: int
@@ -73,7 +67,6 @@ type
 proc startAudio*(): AudioCapture =
   let monitor = findMonitorSource()
   if monitor.len > 0:
-    # Try direct libav first (dlopen at runtime, no dev packages needed)
     block libav:
       if av_helper_init() < 0: break libav
       var ctx: ptr AVFormatContext = nil
@@ -85,44 +78,20 @@ proc startAudio*(): AudioCapture =
       let pkt = av_helper_packet_alloc()
       if pkt != nil:
         return AudioCapture(
-          mode: amLibav, fmtCtx: ctx, packet: pkt,
+          mode: amLive, fmtCtx: ctx, packet: pkt,
           streamIdx: idx.cint,
           demoFreqL: 440.0, demoFreqR: 330.0)
       av_helper_close(addr ctx)
 
-    # Fallback: ffmpeg subprocess
-    try:
-      let p = startProcess("ffmpeg",
-        args = ["-f", "pulse", "-i", monitor,
-                "-f", "s16le", "-ac", "2", "-ar", "44100",
-                "-flush_packets", "1", "-fflags", "nobuffer",
-                "-loglevel", "quiet", "pipe:1"],
-        options = {poUsePath})
-      return AudioCapture(mode: amLive, process: p, stream: p.outputStream,
-                          demoFreqL: 440.0, demoFreqR: 330.0)
-    except OSError: discard
-
-  # Fallback: demo
   AudioCapture(mode: amDemo, demoFreqL: 440.0, demoFreqR: 330.0)
 
 proc stop*(cap: var AudioCapture) =
-  case cap.mode
-  of amLibav:
-    if cap.packet != nil:
-      av_helper_packet_free(addr cap.packet)
-    if cap.fmtCtx != nil:
-      av_helper_close(addr cap.fmtCtx)
-  of amLive:
-    cap.process.terminate()
-    cap.process.close()
-  of amDemo:
-    discard
+  if cap.mode == amLive:
+    if cap.packet != nil: av_helper_packet_free(addr cap.packet)
+    if cap.fmtCtx != nil: av_helper_close(addr cap.fmtCtx)
 
 proc sourceLabel*(cap: AudioCapture): string =
-  case cap.mode
-  of amLibav: "LIVE"
-  of amLive:  "LIVE"
-  of amDemo:  "DEMO"
+  if cap.mode == amLive: "LIVE" else: "DEMO"
 
 # ── Preset cycling ───────────────────────────────────────────────────
 
@@ -140,8 +109,7 @@ proc cyclePreset*(cap: var AudioCapture) =
 
 proc readSamples*(cap: var AudioCapture, scope: var Scope) =
   case cap.mode
-  of amLibav:
-    # Read frames directly from libav — no subprocess, no pipe
+  of amLive:
     const frameSize = 4  # 2ch × 16-bit
     var totalSamples = 0
     while totalSamples < scope.samplesL.len:
@@ -160,22 +128,8 @@ proc readSamples*(cap: var AudioCapture, scope: var Scope) =
           scope.samplesR[totalSamples] = right.float / 32768.0
           totalSamples += 1
       av_helper_packet_unref(cap.packet)
-      if totalSamples > 0: break  # got some data, render it
+      if totalSamples > 0: break
     scope.sampleCount = totalSamples
-
-  of amLive:
-    const frameSize = 4
-    const maxFrames = 2048
-    var buf: array[maxFrames * frameSize, uint8]
-    let bytesRead = cap.stream.readData(addr buf[0], maxFrames * frameSize)
-    if bytesRead <= 0: return
-    scope.sampleCount = min(bytesRead div frameSize, scope.samplesL.len)
-    for i in 0..<scope.sampleCount:
-      let off = i * frameSize
-      let left = cast[int16]((buf[off + 1].uint16 shl 8) or buf[off].uint16)
-      let right = cast[int16]((buf[off + 3].uint16 shl 8) or buf[off + 2].uint16)
-      scope.samplesL[i] = left.float / 32768.0
-      scope.samplesR[i] = right.float / 32768.0
 
   of amDemo:
     scope.sampleCount = scope.samplesL.len
