@@ -28,8 +28,8 @@ proc initScope*(w, h: int): Scope =
     samplesL: newSeq[float](4096),
     samplesR: newSeq[float](4096),
     sampleCount: 0,
-    gain: 5.0,
-    timeDiv: 2.25,
+    gain: 6.5,
+    timeDiv: 3.4,
     grid: gsOff
   )
 
