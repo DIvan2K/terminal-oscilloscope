@@ -32,7 +32,7 @@ proc elapsedMs(start: Time): int =
   int((getTime() - start).inMilliseconds)
 
 proc brightColor(b: float): ForegroundColor =
-  if b > 0.7: fgWhite elif b > 0.4: fgCyan else: fgGreen
+  if b > 0.8: fgWhite elif b > 0.4: fgGreen else: fgGreen
 
 proc crtTurnOn*(tb: var TerminalBuffer, w, h: int) =
   let start = getTime()
@@ -45,7 +45,7 @@ proc crtTurnOn*(tb: var TerminalBuffer, w, h: int) =
 
     if elapsed < OnFlashMs:
       # Phase 1: White flash — high-voltage discharge
-      let c = if elapsed < OnFlashMs div 2: fgWhite else: fgCyan
+      let c = if elapsed < OnFlashMs div 2: fgWhite else: fgGreen
       for y in 0..<h:
         for x in 0..<w:
           tb.write(x, y, c, styleReverse, " ")
@@ -55,7 +55,7 @@ proc crtTurnOn*(tb: var TerminalBuffer, w, h: int) =
       let count = 8 + (elapsed - OnFlashMs) div 4
       for i in 0..<count:
         let ch = GlitchChars[rng.rand(GlitchChars.high)]
-        let color = if rng.rand(2) == 0: fgCyan
+        let color = if rng.rand(2) == 0: fgGreen
                     elif rng.rand(2) == 1: fgGreen
                     else: fgWhite
         tb.write(rng.rand(w - 1), rng.rand(h - 1), color, ch)
@@ -64,7 +64,7 @@ proc crtTurnOn*(tb: var TerminalBuffer, w, h: int) =
       # Phase 3: Phosphor ramp — screen fills with brightening blocks
       let p = (elapsed - OnGlitchMs).float / (OnPhosphorMs - OnGlitchMs).float
       let ch = if p < 0.4: "░" elif p < 0.8: "▒" else: "▓"
-      let color = if p < 0.4: fgGreen elif p < 0.7: fgCyan else: fgWhite
+      let color = if p < 0.4: fgGreen elif p < 0.7: fgGreen else: fgWhite
       for y in 0..<h:
         for x in 0..<w:
           tb.write(x, y, color, ch)
@@ -76,7 +76,7 @@ proc crtTurnOn*(tb: var TerminalBuffer, w, h: int) =
         for x in 0..<w:
           let r = lcg(seed)
           let ch = NoiseChars[int(r shr 16) mod NoiseChars.len]
-          let color = [fgGreen, fgCyan, fgWhite, fgCyan][int(r shr 24) mod 4]
+          let color = [fgGreen, fgGreen, fgWhite, fgGreen][int(r shr 24) mod 4]
           tb.write(x, y, color, ch)
 
     elif elapsed < OnBeamMs:
@@ -88,9 +88,9 @@ proc crtTurnOn*(tb: var TerminalBuffer, w, h: int) =
         if dist == 0:
           for x in 0..<w: tb.write(x, y, fgWhite, styleBright, "━")
         elif dist == 1:
-          for x in 0..<w: tb.write(x, y, fgCyan, "─")
+          for x in 0..<w: tb.write(x, y, fgGreen, "─")
         elif dist <= 3 and y < beamRow:
-          for x in 0..<w: tb.write(x, y, fgCyan, styleDim, "─")
+          for x in 0..<w: tb.write(x, y, fgGreen, styleDim, "─")
 
     tb.display()
     sleep(16)
@@ -149,7 +149,7 @@ proc crtTurnOff*(tb: var TerminalBuffer, w, h: int) =
       # Phase 4: Fade to black
       let b = 1.0 - (elapsed - OffDotMs).float / (OffFadeMs - OffDotMs).float
       if b > 0.05:
-        tb.write(cx, cy, (if b > 0.5: fgCyan else: fgGreen), "·")
+        tb.write(cx, cy, (if b > 0.5: fgGreen else: fgGreen), "·")
 
     tb.display()
     sleep(16)
