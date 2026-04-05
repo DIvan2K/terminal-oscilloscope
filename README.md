@@ -10,8 +10,7 @@ A terminal-based oscilloscope with CRT phosphor physics, written in Nim using [i
 - **Y-T and X-Y modes** — time-domain waveform or Lissajous figures
 - **Phosphor persistence** — beam bloom, decay trails, intensity-based shading
 - **Half-block rendering** — 2x vertical resolution using Unicode `▀▄█` characters
-- **Live audio capture** — visualises system audio via ffmpeg/PulseAudio monitor
-- **Demo mode** — built-in synthesised waveforms when no audio source is available
+- **Live audio capture** — direct libav bindings via dlopen, zero dependencies
 
 ## Install
 
@@ -33,14 +32,11 @@ nimble build
 | `]` / `[` | Zoom in / out time axis |
 | `g` | Cycle grid: full → crosshair → off |
 | `space` | Freeze display |
-| `d` | Cycle demo frequency presets |
 | `q` | Quit (with CRT shutdown effect) |
 
 ## Audio
 
-Captures system audio automatically using `ffmpeg` with the PulseAudio/PipeWire monitor of your default output sink. Falls back to `parec` if available, or a built-in demo signal.
-
-No extra packages needed — just `ffmpeg` (pre-installed on most Linux systems).
+Captures system audio by opening the PulseAudio/PipeWire monitor of your default output sink directly via libavformat and libavdevice. Libraries are loaded at runtime with `dlopen` — no dev packages, no subprocess, no extra dependencies.
 
 ## Credits
 

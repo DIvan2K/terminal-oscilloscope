@@ -1,11 +1,10 @@
-## CRT Oscilloscope — terminal-based oscilloscope with phosphor physics.
+## Terminal oscilloscope with CRT phosphor physics.
 ##
-## Features:
 ##   - CRT boot/shutdown animations (ported from AetherTune)
 ##   - Y-T (time-domain) and X-Y (Lissajous) display modes
 ##   - Phosphor persistence with bloom and decay
 ##   - Half-block rendering for 2× vertical resolution
-##   - Live audio capture via ffmpeg/PulseAudio or demo signal
+##   - Live audio via libavdevice (dlopen, zero dependencies)
 
 import illwill, os
 import osc/[effects, phosphor, scope, audio]
