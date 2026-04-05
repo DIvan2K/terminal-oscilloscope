@@ -30,8 +30,6 @@ nimble build
 | `m` | Toggle Y-T / X-Y mode |
 | `+` / `-` | Increase / decrease gain (amplitude) |
 | `]` / `[` | Zoom in / out time axis |
-| `g` | Cycle grid: full → crosshair → off |
-| `space` | Freeze display |
 | `q` | Quit (with CRT shutdown effect) |
 
 ## Audio

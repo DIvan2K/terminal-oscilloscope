@@ -43,7 +43,7 @@ proc main() =
 
     tb = newTerminalBuffer(w, h)
     scope.phosphor.render(tb)
-    drawGraticule(tb, w, h, scope.grid)
+    drawGraticule(tb, w, h)
     drawHUD(tb, w, h, scope)
     tb.display()
 
@@ -61,8 +61,6 @@ proc main() =
       scope.timeDiv = min(scope.timeDiv * 1.5, 16.0)
     of Key.LeftBracket:
       scope.timeDiv = max(scope.timeDiv / 1.5, 0.25)
-    of Key.G:
-      scope.grid = if scope.grid == gsGrid: gsOff else: gsGrid
     else:
       discard
 

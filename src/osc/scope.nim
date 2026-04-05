@@ -8,10 +8,6 @@ type
     ModeYT   ## Time-domain: x=time, y=amplitude
     ModeXY   ## Lissajous:   x=left, y=right
 
-  GridStyle* = enum
-    gsGrid     ## Full graticule
-    gsOff      ## No grid
-
   Scope* = object
     phosphor*: PhosphorBuffer
     mode*: DisplayMode
@@ -19,7 +15,6 @@ type
     sampleCount*: int
     gain*: float       # amplitude scaling (volts/div)
     timeDiv*: float    # horizontal zoom (time/div)
-    grid*: GridStyle
 
 proc initScope*(w, h: int): Scope =
   Scope(
@@ -29,8 +24,7 @@ proc initScope*(w, h: int): Scope =
     samplesR: newSeq[float](4096),
     sampleCount: 0,
     gain: 6.5,
-    timeDiv: 3.4,
-    grid: gsOff
+    timeDiv: 3.4
   )
 
 proc w*(s: Scope): int = s.phosphor.w
@@ -84,9 +78,7 @@ proc renderTrace*(scope: var Scope) =
 
 # ── Graticule ────────────────────────────────────────────────────────
 
-proc drawGraticule*(tb: var TerminalBuffer, w, h: int, grid: GridStyle) =
-  if grid == gsOff: return
-
+proc drawGraticule*(tb: var TerminalBuffer, w, h: int) =
   let cx = w div 2
   let cy = h div 2
 
@@ -129,5 +121,5 @@ proc drawHUD*(tb: var TerminalBuffer, w, h: int, scope: Scope) =
   tb.write(1, 0, fgGreen, styleBright,
            " " & modeStr & gainStr & tdStr & " ")
 
-  let help = " m:mode +/-:gain [/]:time g:grid q:quit "
+  let help = " m:mode +/-:gain [/]:time q:quit "
   tb.write(w - help.len - 1, h - 1, fgGreen, styleDim, help)
