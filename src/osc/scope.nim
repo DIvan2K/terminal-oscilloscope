@@ -19,7 +19,6 @@ type
     sampleCount*: int
     gain*: float       # amplitude scaling (volts/div)
     timeDiv*: float    # horizontal zoom (time/div)
-    frozen*: bool
     grid*: GridStyle
 
 proc initScope*(w, h: int): Scope =
@@ -31,7 +30,6 @@ proc initScope*(w, h: int): Scope =
     sampleCount: 0,
     gain: 5.0,
     timeDiv: 2.25,
-    frozen: false,
     grid: gsOff
   )
 
@@ -128,9 +126,8 @@ proc drawHUD*(tb: var TerminalBuffer, w, h: int, scope: Scope) =
   let tdStr = if scope.mode == ModeYT:
                 " T:" & formatFloat(scope.timeDiv, ffDecimal, 1)
               else: ""
-  let freezeStr = if scope.frozen: " ▌▌" else: ""
   tb.write(1, 0, fgGreen, styleBright,
-           " " & modeStr & gainStr & tdStr & freezeStr & " ")
+           " " & modeStr & gainStr & tdStr & " ")
 
-  let help = " m:mode +/-:gain [/]:time g:grid spc:freeze q:quit "
+  let help = " m:mode +/-:gain [/]:time g:grid q:quit "
   tb.write(w - help.len - 1, h - 1, fgGreen, styleDim, help)

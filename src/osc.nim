@@ -37,13 +37,9 @@ proc main() =
       h = nh
       scope.resize(w, h)
 
-    if not scope.frozen:
-      audio.readSamples(scope)
-
+    audio.readSamples(scope)
     scope.phosphor.decay()
-
-    if not scope.frozen:
-      scope.renderTrace()
+    scope.renderTrace()
 
     tb = newTerminalBuffer(w, h)
     scope.phosphor.render(tb)
@@ -65,8 +61,6 @@ proc main() =
       scope.timeDiv = min(scope.timeDiv * 1.5, 16.0)
     of Key.LeftBracket:
       scope.timeDiv = max(scope.timeDiv / 1.5, 0.25)
-    of Key.Space:
-      scope.frozen = not scope.frozen
     of Key.G:
       scope.grid = if scope.grid == gsGrid: gsOff else: gsGrid
     else:
