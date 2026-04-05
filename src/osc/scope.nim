@@ -29,10 +29,10 @@ proc initScope*(w, h: int): Scope =
     samplesL: newSeq[float](4096),
     samplesR: newSeq[float](4096),
     sampleCount: 0,
-    gain: 3.0,
-    timeDiv: 1.0,
+    gain: 5.0,
+    timeDiv: 2.25,
     frozen: false,
-    grid: gsGrid
+    grid: gsOff
   )
 
 proc w*(s: Scope): int = s.phosphor.w
