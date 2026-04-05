@@ -66,8 +66,6 @@ proc main() =
         of gsGrid: gsCross
         of gsCross: gsOff
         of gsOff: gsGrid
-    of Key.D:
-      audio.cyclePreset()
     else:
       discard
 
