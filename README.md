@@ -41,6 +41,11 @@ nim c -d:release --threads:on -o:osc_braille src/osc_braille.nim
 ./osc_braille
 ```
 
+**Install globally:**
+```bash
+sudo ln -s $(pwd)/osc /usr/local/bin/osc
+```
+
 ## Controls
 
 | Key | Action |
