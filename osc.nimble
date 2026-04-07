@@ -10,4 +10,3 @@ bin           = @["osc"]
 # Dependencies
 
 requires "nim >= 2.2.8"
-requires "illwill >= 0.4.1"
