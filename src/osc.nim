@@ -137,7 +137,7 @@ proc main() =
     let hud = " " & (if scope.mode == ModeYT: "Y-T" else: "X-Y") &
               " G:" & $scope.gain & " "
     let help = " m:mode +/-:gain [/]:time q:quit "
-    c.flush([(1, 0, tBright, hud),
+    c.flush([(1, 0, tNormal, hud),
              (w - help.len - 1, h - 1, tDim, help)])
 
     sleep(16)

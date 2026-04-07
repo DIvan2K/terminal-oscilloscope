@@ -10,14 +10,14 @@ const
 
 type
   Tint* = enum
-    tNone, tDim, tNormal, tBright, tHot
+    tNone, tDim, tNormal, tWarm, tHot
 
   Palette* = object
     hot*: string       # white-hot beam core
     bright*: string    # bright phosphor
     normal*: string    # standard glow
     dim*: string       # faint persistence
-    reset: string
+    reset*: string
 
   Canvas* = object
     w*, h*: int
@@ -94,14 +94,14 @@ proc decayPixels*(c: var Canvas, factor: float) =
 
 proc tintFor*(c: Canvas, b: float): Tint {.inline.} =
   if b > c.thresholds[0]: tHot
-  elif b > c.thresholds[1]: tBright
+  elif b > c.thresholds[1]: tWarm
   elif b > c.thresholds[2]: tNormal
   else: tDim
 
 proc ansiFor*(c: Canvas, t: Tint): string {.inline.} =
   case t
   of tHot:    c.pal.hot
-  of tBright: c.pal.bright
+  of tWarm: c.pal.bright
   of tNormal: c.pal.normal
   of tDim:    c.pal.dim
   of tNone:   c.pal.reset

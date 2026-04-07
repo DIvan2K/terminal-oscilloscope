@@ -2,14 +2,20 @@
 
 A terminal-based oscilloscope with CRT phosphor physics, written in Nim. Zero dependencies — 200KB binary, just libc.
 
+## Half-block renderer
+
 ![demo](demo.gif)
+
+## Braille renderer (amber palette)
+
+![braille demo](braille_demo.gif)
 
 ## Features
 
 - **CRT boot/shutdown animations** — phosphor ramp, beam sweep, vertical collapse, dot fade
 - **Y-T and X-Y modes** — time-domain waveform or Lissajous figures
 - **Phosphor persistence** — beam bloom, decay trails, intensity-based shading
-- **Half-block rendering** — 2x vertical resolution using Unicode `▀▄█` characters
+- **Two renderers** — half-block (`▀▄█`) or braille dots for 4× resolution
 - **Live audio capture** — direct libav bindings via dlopen, zero install
 - **Threaded audio** — 60fps rendering, audio capture on separate thread
 - **6 CRT phosphor palettes** — green, amber, cyan, blue, white, red
@@ -21,8 +27,18 @@ Requires [Nim](https://nim-lang.org/) 2.x.
 ```bash
 git clone https://github.com/rolandnsharp/terminal-oscilloscope.git
 cd terminal-oscilloscope
+```
+
+**Half-block version** (chunky CRT look):
+```bash
 nim c -d:release --threads:on -o:osc src/osc.nim
 ./osc
+```
+
+**Braille version** (high-resolution dots):
+```bash
+nim c -d:release --threads:on -o:osc_braille src/osc_braille.nim
+./osc_braille
 ```
 
 ## Controls
@@ -36,7 +52,7 @@ nim c -d:release --threads:on -o:osc src/osc.nim
 
 ## Configuration
 
-Edit the constants at the top of `src/osc.nim`:
+Edit the constants at the top of `src/osc.nim` or `src/osc_braille.nim`:
 
 ```nim
 const

@@ -52,7 +52,7 @@ proc crtTurnOn*(c: Canvas) =
 
     if elapsed < OnFlashMs:
       # Phase 1: White flash
-      let ansi = if elapsed < OnFlashMs div 2: c.ansiFor(tHot) else: c.ansiFor(tBright)
+      let ansi = if elapsed < OnFlashMs div 2: c.ansiFor(tHot) else: c.ansiFor(tWarm)
       buf.add "\x1b[0m"
       buf.add ansi
       for y in 0..<h:
@@ -69,7 +69,7 @@ proc crtTurnOn*(c: Canvas) =
         let gx = rng.rand(w - 1)
         let gy = rng.rand(h - 1)
         let ch = GlitchChars[rng.rand(GlitchChars.high)]
-        let tint = if rng.rand(2) == 0: tBright else: tHot
+        let tint = if rng.rand(2) == 0: tWarm else: tHot
         buf.goto(gx, gy)
         buf.add "\x1b[0m"
         buf.add c.ansiFor(tint)
@@ -79,7 +79,7 @@ proc crtTurnOn*(c: Canvas) =
       # Phase 3: Phosphor ramp
       let p = (elapsed - OnGlitchMs).float / (OnPhosphorMs - OnGlitchMs).float
       let ch = if p < 0.4: "░" elif p < 0.8: "▒" else: "▓"
-      let tint = if p < 0.4: tDim elif p < 0.7: tNormal else: tBright
+      let tint = if p < 0.4: tDim elif p < 0.7: tNormal else: tWarm
       buf.add "\x1b[0m"
       buf.add c.ansiFor(tint)
       for y in 0..<h:
@@ -93,7 +93,7 @@ proc crtTurnOn*(c: Canvas) =
         for x in 0..<w:
           let r = lcg(seed)
           let ch = NoiseChars[int(r shr 16) mod NoiseChars.len]
-          let tint = [tNormal, tBright, tHot, tNormal][int(r shr 24) mod 4]
+          let tint = [tNormal, tWarm, tHot, tNormal][int(r shr 24) mod 4]
           buf.add "\x1b[0m"
           buf.add c.ansiFor(tint)
           buf.add ch
@@ -114,7 +114,7 @@ proc crtTurnOn*(c: Canvas) =
             for x in 0..<w: buf.add "━"
           elif dist == 1:
             buf.add "\x1b[0m"
-            buf.add c.ansiFor(tBright)
+            buf.add c.ansiFor(tWarm)
             for x in 0..<w: buf.add "─"
           elif y < beamRow:
             buf.add "\x1b[0m"
@@ -148,7 +148,7 @@ proc crtTurnOff*(c: Canvas) =
       for y in max(cy - halfH, 0)..<min(cy + halfH + 1, h):
         let b = 1.0 - abs(y - cy).float / max(halfH, 1).float * 0.6
         let ch = if b > 0.8: "▓" elif b > 0.6: "▒" elif b > 0.3: "░" else: "·"
-        let tint = if b > 0.8: tHot elif b > 0.4: tBright else: tNormal
+        let tint = if b > 0.8: tHot elif b > 0.4: tWarm else: tNormal
         buf.goto(0, y)
         buf.add "\x1b[0m"
         buf.add c.ansiFor(tint)
@@ -184,7 +184,7 @@ proc crtTurnOff*(c: Canvas) =
                    elif dist < glowR.float * 0.4: "░"
                    else: "·"
           let tint = if falloff > 0.7: tHot
-                     elif falloff > 0.4: tBright
+                     elif falloff > 0.4: tWarm
                      else: tNormal
           buf.goto(px, py)
           buf.add "\x1b[0m"
