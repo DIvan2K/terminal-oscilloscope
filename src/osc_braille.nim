@@ -1,6 +1,6 @@
 ## Terminal oscilloscope — braille dot rendering (4× resolution).
 
-import os
+import os, strutils
 import posix/termios as ptermios
 from posix import read
 import osc/canvas/[braille, term, effects]
@@ -129,7 +129,7 @@ proc main() =
     c.renderTrace(scope)
 
     let hud = " " & (if scope.mode == ModeYT: "Y-T" else: "X-Y") &
-              " G:" & $scope.gain & " "
+              " G:" & scope.gain.formatFloat(ffDecimal, 1) & " "
     let help = " m:mode +/-:gain [/]:time q:quit "
     c.flush([(1, 0, tNormal, hud),
              (w - help.len - 1, h - 1, tDim, help)])

@@ -2,13 +2,13 @@
 
 A terminal-based oscilloscope with CRT phosphor physics, written in Nim. Zero dependencies — 200KB binary, just libc.
 
-## Half-block renderer
-
-![demo](demo.gif)
-
 ## Braille renderer (amber palette)
 
 ![braille demo](braille_demo.gif)
+
+## Half-block renderer
+
+![demo](demo.gif)
 
 ## Features
 
