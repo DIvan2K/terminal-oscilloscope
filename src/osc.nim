@@ -47,7 +47,7 @@ Palettes:
   green, amber, cyan, blue, white, red
 
 Example:
-  ./oscilloscope --palette:amber --decay:0.92 --beam:0.6 --bloom:0.12
+  ./osc --palette:amber --decay:0.92 --beam:0.6 --bloom:0.12
 """
 
 proc parseConfig(): Config =

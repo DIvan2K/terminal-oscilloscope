@@ -43,7 +43,7 @@ Options:
   -h, --help           Show this help
 
 Example:
-  ./oscilloscope --palette:amber --decay:0.92 --beam:0.6 --bloom:0.12
+  ./osc_braille --palette:amber --decay:0.92 --beam:0.6 --bloom:0.12
 """
 
 proc parseConfig(): Config =
